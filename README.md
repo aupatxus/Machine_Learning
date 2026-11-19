@@ -184,3 +184,115 @@ No es necesario programar las fórmulas matemáticas desde cero; el ecosistema d
 
 
 <hr>
+
+
+
+
+
+
+
+
+
+# Machine Learning: Regresión Lineal
+
+Fundamentos matemáticos, estadísticos y prácticos de la **Regresión Lineal** en Machine Learning.
+
+---
+
+## 1. Definición y Conceptos Clave
+La **Regresión Lineal** es uno de los métodos estadísticos de predicción más utilizados. Se trata de una técnica **paramétrica** (realiza diversas suposiciones sobre el conjunto de datos) que modela la relación entre una variable continua y una o más variables independientes.
+
+* **¿Por qué *regresión*?** Expresa la relación entre una variable llamada **regresando** ($y$, variable dependiente o respuesta) y otra llamada **regresor** ($x$, variable independiente o predictor).
+* **¿Por qué *lineal*?** Porque los parámetros ($\beta$ o pesos $w$) de la ecuación se incorporan de manera lineal.
+
+### Ejemplos de Aplicación
+1. Estimación de las ventas a partir del gasto en marketing (TV, radio, periódicos).
+2. Estimación del consumo de gasolina en función de la distancia recorrida.
+3. Predicción del precio de casas en función de los metros cuadrados, edad de la vivienda, número de habitaciones y población de la zona.
+
+---
+
+## 2. Tipos de Regresión Lineal e Interpretación de Coeficientes
+
+### Tipos de Modelos
+* **Regresión Lineal Simple:** Modela la relación con una única variable independiente (define una recta).
+  $$Y = \beta_0 + \beta_1 X_1$$
+* **Regresión Lineal Múltiple:** Modela la relación con múltiples variables independientes (define un plano o hiperplano).
+  $$Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_j X_j$$
+
+### Significado de los Coeficientes ($\beta$ o $w$)
+* **$\beta_0$ (Intercepto / Secante):** Es el valor que toma la variable respuesta ($Y$) cuando todos los predictores ($X$) valen `0`.
+* **$\beta_j$ (Pendiente / Peso):** Indica cuánto aumenta (o disminuye) la variable respuesta ($Y$) cuando el predictor $X_j$ se incrementa en una unidad, manteniendo el resto de variables constantes.
+
+> **Ejemplo práctico:** En `Sales = 500 + 50*(TV) + 20*(radio) + 15*(newspaper)`, si la inversión en TV aumenta en 1 unidad, las ventas aumentan en 50 unidades.
+
+### Feature Importance (Importancia de las Variables)
+* **Error común:** Pensar que cuanto más alto es un coeficiente, más importante es esa variable. Esto es falso si las variables están medidas en unidades diferentes (ej. comparar *años de antigüedad* con *ingresos medios en dólares*).
+* **Solución:** **Estandarizar los datos** antes de entrenar para que todas las variables estén en la misma escala y sus pesos sean comparables:
+  $$z = \frac{x - \mu}{\sigma}$$
+
+---
+
+## 3. Optimización: Función de Coste y Gradient Descent
+
+Para encontrar la recta o hiperplano que mejor se ajuste a los datos, necesitamos medir cuánto se equivoca el modelo y minimizar ese error.
+
+### Loss Function (Función de Costes)
+La métrica habitual para medir el error durante el entrenamiento de la regresión lineal es el **Error Cuadrático Medio (MSE)**:
+$$MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2$$
+*(Donde $n$ es el número de observaciones, $y$ son los valores reales e $\hat{y}$ son los valores predichos).*
+
+### Gradient Descent (Descenso del Gradiente)
+Es un algoritmo de optimización matemática utilizado para encontrar los pesos ($w$ y $b$) que minimizan la función de costes. Funciona buscando el punto donde la pendiente (derivada) de la curva de error es `0`:
+* Si la pendiente es **positiva**, estamos en el lado derecho de la curva $\rightarrow$ **disminuimos** $w$.
+* Si la pendiente es **negativa**, estamos en el lado izquierdo de la curva $\rightarrow$ **aumentamos** $w$.
+
+#### Pasos del Algoritmo:
+1. Definir la **función de costes** $J(w, b)$.
+2. Calcular el **gradiente** mediante derivadas parciales respecto a $w$ y $b$ para saber en qué dirección y qué tan lejos estamos del mínimo.
+3. Actualizar los parámetros para la siguiente iteración usando un **Learning Rate ($\alpha$)** (hiperparámetro definido por nosotros que determina el tamaño del salto):
+   $$w = w - \alpha \frac{\partial J(w,b)}{\partial w} \quad ; \quad b = b - \alpha \frac{\partial J(w,b)}{\partial b}$$
+4. Repetir hasta alcanzar la **convergencia** (mínimo global del coste).
+
+---
+
+## 4. Condiciones y Supuestos de la Regresión Lineal
+Al ser un método paramétrico, para que el modelo sea válido y fiable se deben cumplir las siguientes condiciones:
+
+1. **Distribución normal del target:** La variable objetivo debe seguir una distribución gaussiana.
+2. **No colinealidad o multicolinealidad:** No debe existir correlación alta entre los predictores (variables $X$). Si dos variables están muy correlacionadas, se debe eliminar una para garantizar la independencia.
+3. **Relación lineal entre target y predictores:** Comprobable mediante una matriz de correlación.
+4. **Homocedasticidad:** La varianza de los errores debe ser constante a lo largo de todas las observaciones (evitar distribuciones heterocedásticas en forma de abanico).
+5. **Independencia de los residuos (errores):** Los errores no deben mostrar patrones ni autocorrelación (deben distribuirse de forma aleatoria).
+6. **Normalidad de los residuos:** Los errores deben seguir una distribución normal centrada en cero.
+7. **Control de Outliers:** Vigilar valores atípicos o influyentes, trabajando únicamente con valores cuantitativos adecuados.
+
+---
+
+## 5. Evaluación del Modelo y Métricas de Error
+
+### Coeficiente de Determinación ($R^2$ / R-Squared)
+* Mide qué tan bien se ajusta la regresión a los datos y qué proporción de la variación de la variable dependiente ($y$) es predecible a partir de las variables independientes ($x$).
+* Toma valores en el rango **$[0, 1]$** (cuanto más cerca de `1`, mejor ajuste; valores superiores a `0.70` suelen considerarse buenos indicadores).
+* *Otras métricas estadísticas complementarias:* **Adjusted $R^2$** (mayor es mejor), **AIC** y **BIC** (menor es mejor), **p-value < 0.05** (t-statistic > 1.96).
+
+### Métricas de Error
+* **MAE (Mean Absolute Error):** Promedio de los errores absolutos. Tiene la ventaja de expresarse en las **mismas unidades que el target**, facilitando su interpretación.
+  $$MAE = \frac{\sum_{i=1}^{n} |y_i - \hat{y}_i|}{n}$$
+* **MSE (Mean Squared Error):** Promedio de los errores al cuadrado. Es más difícil de interpretar directamente por estar al cuadrado, pero **penaliza y enfatiza mucho más los errores grandes**.
+  $$MSE = \frac{1}{n} \sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2$$
+* **RMSE (Root Mean Squared Error):** Raíz cuadrada del MSE. Mantiene la penalización a errores grandes pero devuelve el resultado a las unidades originales del target.
+  $$RMSE = \sqrt{\frac{\sum_{t=1}^{T} (\hat{y}_t - y_t)^2}{T}}$$
+
+---
+
+## 6. Bibliografía y Recursos Recomendados
+* [Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow (O'Reilly)](https://oreilly.com)
+* [Regresión Lineal con Python - Ciencia de Datos](https://cienciadedatos.net)
+* [Gradient Descent for Machine Learning - Machine Learning Mastery](https://machinelearningmastery.com)
+* [Gradient Descent Animation - Towards Data Science](https://towardsdatascience.com)
+
+
+
+<hr>
+
